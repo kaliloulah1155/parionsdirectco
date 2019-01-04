@@ -1,0 +1,470 @@
+    public function dashboard(){
+
+        $ipadress_api=$this->ipconfig->ipadress();
+
+        /*Debut  Piste d'audits */
+        $user = Auth::user();
+        $current = new Carbon;
+        $currentD=Carbon::parse($current)->format('d/m/Y');
+        $currentH=Carbon::parse($current)->format('H\h i\m\i\n s\s ');
+        $datap=[];
+        $datap[]=[
+            'utilisateur'=>$user->email,
+            'action'=>"a consulté le dashboard",
+            'type'=>'consultation',
+            'dates'=> $currentD, // date de la creation de l'audits
+            'heures'=> $currentH,   //formatage heure
+        ];
+        DB::table('logaudits')->insert($datap);
+        /* fin piste d'audits */
+       
+       $resultatsloto = Curl::to($ipadress_api.'/admin/ail/loto/payments')->asJson()->get();
+       $listDataLoto=$resultatsloto->data;
+
+       $resultatsplr = Curl::to($ipadress_api.'/admin/ail/pmu/payments')->asJson()->get();
+       $listDataPlr=$resultatsplr->data;
+
+       $resultatsalr = Curl::to($ipadress_api.'/admin/alr/payments')->asJson()->get();
+       $listDataAlr=$resultatsalr->data;
+      
+
+       $resultatssportcash = Curl::to($ipadress_api.'/admin/sportcash/payments')->asJson()->get();
+
+       $listDataSportcash=$resultatssportcash->data;
+
+       $nbreticketpris=0;
+       $totalchifaf=0;
+       $nbreticketgagnant=0;
+
+/**************************** LOTO ********************************/
+       //debut  Loto
+               $gagnantLoto=0;
+               $perdantloto=0;
+               $encourloto=0;
+               $rembourseloto=0;
+               $annuleloto=0;
+               $gagnantchifafLoto=0;
+               $perdantchifafLoto=0;
+
+            //debut nombre de ticket pris
+                $gagnantsloto = 0;
+                foreach ($listDataLoto as $list) {
+                    if($list->bet_status=="Gagnant"){
+                         ++$gagnantsloto;
+                    }
+                }
+                $gagnantLoto=$gagnantsloto;
+
+
+                $perdantsloto = 0;
+                foreach ($listDataLoto as $list) {
+                    if($list->bet_status=="Perdant"){
+                         ++$perdantsloto;
+                    }
+                }
+                $perdantloto=$perdantsloto;
+
+                $encoursloto = 0;
+                foreach ($listDataLoto as $list) {
+                    if($list->bet_status=="En cours"){
+                         ++$encoursloto;
+                    }
+                }
+                $encourloto=$encoursloto;
+
+                $rembourserloto = 0;
+                foreach ($listDataLoto as $list) {
+                    if($list->bet_status=="Remboursé"){
+                         ++$rembourserloto;
+                    }
+                }
+                $rembourseloto=$rembourserloto;
+
+                $annulesloto = 0;
+                foreach ($listDataLoto as $list) {
+                    if($list->bet_status=="Annulé"){
+                         ++$annulesloto;
+                    }
+                }
+                $annuleloto=$annulesloto;
+
+                $totalticketprisLoto=$gagnantLoto+$perdantloto+$encourloto+$rembourseloto+$annuleloto;
+
+            //fin nombre de ticket pris  
+
+            //montant des tickets gagnants
+            $gagnantmntgainsLoto = 0;
+            foreach ($listDataLoto as $list) {
+                if($list->bet_status=="Gagnant"){
+                    $gagnantmntgainsLoto += $list->earning_amount;
+                }
+            }
+            $gagnantmntgainsLotos=$gagnantmntgainsLoto;
+            $gagnantmntgainLoto1=number_format($gagnantmntgainsLotos);
+            $gagnantmntgainLoto=str_replace(',', '.',$gagnantmntgainLoto1);
+
+        $gagnantschifafLoto = 0;
+        foreach ($listDataLoto as $list) {
+            if($list->bet_status=="Gagnant"){
+                $gagnantschifafLoto += $list->bet_cost_amount;
+            }
+        }
+        $gagnantchifafLoto=$gagnantschifafLoto;
+
+        $perdantschifafLoto = 0;
+        foreach ($listDataLoto as $list) {
+            if($list->bet_status=="Gagnant"){
+                $perdantschifafLoto += $list->bet_cost_amount;
+            }
+        }
+        $perdantchifafLoto=$perdantschifafLoto;
+
+        $totalchifafLotos=$perdantchifafLoto+$gagnantchifafLoto;
+        $totalchifafLoto1=number_format($totalchifafLotos);
+        $totalchifafLoto=str_replace(',', '.',$totalchifafLoto1);
+
+       
+        //fin Loto
+
+/**************************** ALR ********************************/
+        //debut  Alr
+               $gagnantAlr=0;
+               $perdantalr=0;
+               $valpayalr=0;
+               $encouralr=0;
+               $remboursealr=0;
+               $annulealr=0;
+               $gagnantchifafAlr=0;
+               $perdantchifafAlr=0;
+
+
+            //debut nombre de ticket pris
+                $gagnantsalr = 0;
+                foreach ($listDataAlr as $list) {
+                    if($list->bet_status=="Gagnant"){
+                         ++$gagnantsalr;
+                    }
+                }
+                $gagnantAlr=$gagnantsalr;
+
+
+                $perdantsalr = 0;
+                foreach ($listDataAlr as $list) {
+                    if($list->bet_status=="Perdant"){
+                         ++$perdantsalr;
+                    }
+                }
+                $perdantplr=$perdantsalr;
+
+                $encoursalr = 0;
+                foreach ($listDataAlr as $list) {
+                    if($list->bet_status=="En cours"){
+                         ++$encoursalr;
+                    }
+                }
+                $encouralr=$encoursalr;
+
+                $rembourseralr = 0;
+                foreach ($listDataAlr as $list) {
+                    if($list->bet_status=="Remboursé"){
+                         ++$rembourseralr;
+                    }
+                }
+                $remboursealr=$rembourseralr;
+
+                $valpayalr = 0;
+                foreach ($listDataAlr as $list) {
+                    if($list->bet_status=="Vainqueur en attente de paiement"){
+                         ++$valpayalr;
+                    }
+                }
+                $valpayeralr=$valpayalr;
+
+                $annulesalr = 0;
+                foreach ($listDataAlr as $list) {
+                    if($list->bet_status=="Annulé"){
+                         ++$annulesloto;
+                    }
+                }
+                $annulealr=$annulesalr;
+
+                $totalticketprisAlr=$gagnantAlr+$perdantalr+$encouralr+$remboursealr+$annulealr+$valpayeralr;
+
+            //fin nombre de ticket pris  
+
+            //montant des tickets gagnants
+            $gagnantmntgainsAlr = 0;
+            foreach ($listDataAlr as $list) {
+                if($list->bet_status=="Gagnant"){
+                    $gagnantmntgainsAlr += $list->amount;
+                }
+            }
+            $gagnantmntgainAlrs=$gagnantmntgainsAlr;
+            $gagnantmntgainAlr1=number_format($gagnantmntgainsAlr);
+            $gagnantmntgainAlr=str_replace(',', '.',$gagnantmntgainAlr1);
+
+
+        $gagnantschifafAlr = 0;
+        foreach ($listDataAlr as $list) {
+            if($list->bet_status=="Gagnant"){
+                $gagnantschifafAlr += $list->amount;
+            }
+        }
+        $gagnantchifafAlr=$gagnantschifafAlr;
+
+        $perdantschifafAlr = 0;
+        foreach ($listDataAlr as $list) {
+            if($list->bet_status=="Gagnant"){
+                $perdantschifafAlr += $list->amount;
+            }
+        }
+        $perdantchifafAlr=$perdantschifafAlr;
+
+        $totalchifafAlrs=$perdantchifafAlr+$gagnantchifafAlr;
+        $totalchifafAlr1=number_format($totalchifafAlrs);
+        $totalchifafAlr=str_replace(',', '.',$totalchifafAlr1);
+       
+        //fin ALR
+/**************************** PLR ********************************/
+        //debut  Plr
+               $gagnantPlr=0;
+               $perdantplr=0;
+               $encourplr=0;
+               $rembourseplr=0;
+               $annuleplr=0;
+               $gagnantchifafPlr=0;
+               $perdantchifafPlr=0;
+
+            //debut nombre de ticket pris
+                $gagnantsplr = 0;
+                foreach ($listDataPlr as $list) {
+                    if($list->bet_status=="Gagnant"){
+                         ++$gagnantsplr;
+                    }
+                }
+                $gagnantPlr=$gagnantsplr;
+
+
+                $perdantsplr = 0;
+                foreach ($listDataPlr as $list) {
+                    if($list->bet_status=="Perdant"){
+                         ++$perdantsplr;
+                    }
+                }
+                $perdantplr=$perdantsplr;
+
+                $encoursplr = 0;
+                foreach ($listDataPlr as $list) {
+                    if($list->bet_status=="En cours"){
+                         ++$encoursplr;
+                    }
+                }
+                $encourplr=$encoursplr;
+
+                $rembourserplr = 0;
+                foreach ($listDataPlr as $list) {
+                    if($list->bet_status=="Remboursé"){
+                         ++$rembourserplr;
+                    }
+                }
+                $rembourseplr=$rembourserplr;
+
+                $annulesplr = 0;
+                foreach ($listDataPlr as $list) {
+                    if($list->bet_status=="Annulé"){
+                         ++$annulesloto;
+                    }
+                }
+                $annuleplr=$annulesplr;
+
+                $totalticketprisPlr=$gagnantPlr+$perdantplr+$encourplr+$rembourseplr+$annuleplr;
+
+            //fin nombre de ticket pris  
+
+            //montant des tickets gagnants
+            $gagnantmntgainsPlr = 0;
+            foreach ($listDataPlr as $list) {
+                if($list->bet_status=="Gagnant"){
+                    $gagnantmntgainsPlr += $list->earning_amount;
+                }
+            }
+            $gagnantmntgainPlrs=$gagnantmntgainsPlr;
+            $gagnantmntgainPlr1=number_format($gagnantmntgainsPlr);
+            $gagnantmntgainPlr=str_replace(',', '.',$gagnantmntgainPlr1);
+
+
+        $gagnantschifafPlr = 0;
+        foreach ($listDataPlr as $list) {
+            if($list->bet_status=="Gagnant"){
+                $gagnantschifafPlr += $list->bet_cost_amount;
+            }
+        }
+        $gagnantchifafPlr=$gagnantschifafPlr;
+
+        $perdantschifafPlr = 0;
+        foreach ($listDataPlr as $list) {
+            if($list->bet_status=="Gagnant"){
+                $perdantschifafPlr += $list->bet_cost_amount;
+            }
+        }
+        $perdantchifafPlr=$perdantschifafPlr;
+
+        $totalchifafPlrs=$perdantchifafPlr+$gagnantchifafPlr;
+        $totalchifafPlr1=number_format($totalchifafPlrs);
+        $totalchifafPlr=str_replace(',', '.',$totalchifafPlr1);
+       
+        //fin PLR
+
+/**************************** SPORTCASH ********************************/
+        //debut  Sportcash
+               $gagnantSportcash=0;
+               $perdantsportcash=0;
+               $encoursportcash=0;
+               $remboursesportcash=0;
+               $annulesportcash=0;
+               $gagnantchifafSportcash=0;
+               $perdantchifafSportcash=0;
+
+            //debut nombre de ticket pris
+                $gagnantssportcash = 0;
+                foreach ($listDataSportcash as $list) {
+                    if($list->bet_status=="Gagnant"){
+                         ++$gagnantssportcash;
+                    }
+                }
+                $gagnantSportcash=$gagnantssportcash;
+
+
+                $perdantsportcash = 0;
+                foreach ($listDataSportcash as $list) {
+                    if($list->bet_status=="Perdant"){
+                         ++$perdantsportcash;
+                    }
+                }
+                $perdantsportcash=$perdantsportcash;
+
+                $encoursportcash = 0;
+                foreach ($listDataSportcash as $list) {
+                    if($list->bet_status=="En cours"){
+                         ++$encoursportcash;
+                    }
+                }
+                $encoursportcash=$encoursportcash;
+
+                $remboursesportcash = 0;
+                foreach ($listDataSportcash as $list) {
+                    if($list->bet_status=="Remboursé"){
+                         ++$remboursesportcash;
+                    }
+                }
+                $remboursesportcash=$remboursesportcash;
+
+                $annulesportcash = 0;
+                foreach ($listDataSportcash as $list) {
+                    if($list->bet_status=="Annulé"){
+                         ++$annulesportcash;
+                    }
+                }
+                $annulesportcash=$annulesportcash;
+
+                $totalticketprisSportcash=$gagnantSportcash+$perdantsportcash+$encoursportcash+$remboursesportcash+$annulesportcash;
+
+            //fin nombre de ticket pris  
+
+            //montant des tickets gagnants
+            $gagnantmntgainsSportcash = 0;
+            foreach ($listDataSportcash as $list) {
+                if($list->bet_status=="Gagnant"){
+                    $gagnantmntgainsSportcash += $list->win_amount;
+                }
+            }
+            $gagnantmntgainSportcashs=$gagnantmntgainsSportcash;
+
+            $gagnantmntgainsSportcash1=number_format($gagnantmntgainSportcashs);
+
+            $gagnantmntgainsSportcash=str_replace(',', '.',$gagnantmntgainsSportcash1);
+
+
+
+
+        $gagnantschifafSportcash = 0;
+        foreach ($listDataSportcash as $list) {
+            if($list->bet_status=="Gagnant"){
+                $gagnantschifafSportcash += $list->amount;
+            }
+        }
+        $gagnantchifafSportcash=$gagnantschifafSportcash;
+
+        $perdantschifafSportcash = 0;
+        foreach ($listDataSportcash as $list) {
+            if($list->bet_status=="Perdant"){
+                $perdantschifafSportcash += $list->amount;
+            }
+        }
+        $perdantchifafSportcash=$perdantschifafSportcash;
+
+        $totalchifafSportcashs=$perdantchifafSportcash+$gagnantchifafSportcash;
+        $totalchifafSportcash1=number_format($totalchifafSportcashs);
+        $totalchifafSportcash=str_replace(',', '.',$totalchifafSportcash1);
+       
+        //fin Sportcash
+
+
+
+       /*************** TOTAL ****************************/
+        $nbreticketpris=$totalticketprisPlr+$totalticketprisLoto+$totalticketprisSportcash;
+        $totalchifaf=$totalchifafLotos+$totalchifafPlrs;
+        $totalchifaf1=number_format($totalchifaf);
+        $totalchifaf=str_replace(',', '.',$totalchifaf1);
+
+        $nbreticketgagnant=$gagnantLoto+$gagnantPlr+$gagnantSportcash;
+        $gagnantmntgain =$gagnantmntgainsLotos+$gagnantmntgainPlrs+$gagnantmntgainSportcashs;
+        $gagnantmntgain1=number_format($gagnantmntgain);
+        $gagnantmntgain=str_replace(',', '.',$gagnantmntgain1);
+        
+     
+        return view('admin.admin_dashboard',compact(
+            /** TOTAL **/
+            'nbreticketpris',
+            'totalchifaf',
+            'nbreticketgagnant',
+            'gagnantmntgain',
+            /*** LOTO **/
+            'gagnantLoto',
+            'gagnantmntgainLoto',
+            'totalticketprisLoto',
+            'totalchifafLoto',
+            /*** PLR **/
+            'gagnantPlr',
+            'gagnantmntgainPlr',
+            'totalticketprisPlr',
+            'totalchifafPlr',
+            /*** ALR **/
+            'gagnantAlr',
+            'gagnantmntgainAlr',
+            'totalticketprisAlr',
+            'totalchifafAlr',
+            /*** SPORTCASH **/
+            'gagnantSportcash',
+            'gagnantmntgainsSportcash',
+            'totalticketprisSportcash',
+            'totalchifafSportcash'
+
+        ));
+
+    }
+
+     <td style="text-align: center" >
+                                                            @if($list->bet_status=="Vainqueur en attente de paiement")
+                                                                <b style="color: green" id="etat{{$list->transaction_id}}"  class="colors{{$list->transaction_id}}" >activé</b>
+                                                            @else
+                                                                <b style="color:red" id="etat{{$list->transaction_id}}" class="colors{{$list->transaction_id}}" >desactivé</b>
+                                                            @endif
+                                                            <br/>
+                                                            <input type="hidden"  id="roleID{{$list->transaction_id}}" value="{{$list->transaction_id}}" />
+
+                                                            <select id="roleStatus{{$list->transaction_id}}" class="selroleID{{$list->transaction_id}}">
+                                                                <option value="true">activé</option>
+                                                                <option value="false">desactivé</option>
+                                                            </select>
+                                                    </td>

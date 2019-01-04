@@ -1,0 +1,136 @@
+/*
+.ccheck{
+
+   display: flex;
+   flex-flow: row wrap;
+    justify-content: space-around;
+    align-items: center;
+    align-content: center;
+
+}*/
+
+.field-container {
+  display: table;
+  margin-bottom: 12px;
+  vertical-align: top;
+  width: 100%;
+  
+  &.half {
+    width: 50%;
+  }
+  &.third {
+    width: 33.3%;
+  }
+  &.quarter {
+    width: 25%;
+  }
+}
+.inline-label-form {
+  > label {
+    width: 14%;
+    display: table-cell;
+    padding-top: 9px;
+    margin: 0;
+    text-align: left;
+    padding-right: 15px;
+    font-weight: 600;
+    color: #32383e;
+    vertical-align: top;
+  }
+}
+
+.field-boxes {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  max-width: 100%;
+  
+  label{
+    font-weight:400;
+    display: table;
+    width: 50%;
+    flex-basis: 50%;
+    text-align: left;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    vertical-align: baseline;
+    > *{
+     display: table-cell;
+     &:last-child{
+      width: 100%;
+      padding-right: 15px;
+     }
+     &[class*="icon-"]{
+      padding-right: 7px;
+     }
+    }
+  }
+  
+  &.quarter label {
+    flex-basis: 25%;
+    width: 25%;
+  }
+}
+/*
+input[type="checkbox"],
+input[type="radio"]{
+  display: inline;
+  width: auto;
+  margin-right: 7px;
+}
+*/
+
+.field-container label{
+  display: block;
+  padding: 10px;
+}
+
+.field-container label > span::before{
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  /*background: blue;*/
+  background-image:url('../images/checked_unchecked.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  position:relative;
+  top:2px;
+  margin-right:10px;
+  transition: background-image .4s ease;
+
+}
+
+.field-container label > input[type="checkbox"]{
+    display: none;
+}
+
+.field-container label > input[type="checkbox"]:checked + span::before{
+   background-image:url('../images/checked.jpg');
+} 
+
+
+@media (max-width: 500px) {
+    .ccheck{
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+}
+
+/* css dashboard */
+
+.dshbrd1{
+     background-color: #298A08;
+ }
+
+.dshbrd2{
+    background-color: #FF8000;
+}
+
+
